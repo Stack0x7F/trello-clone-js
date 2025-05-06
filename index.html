@@ -15,27 +15,40 @@
             background: rgba(0, 255, 0, 0.1);
             border: 1px dashed #00ff00;     
         }
+        .delete-board-btn {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    
+    <header class="header">
+        <div class="header__left">
+            <h1 class="logo">TaskFlow</h1>
+        </div>
+        <div class="header__right">
+            <div class="search">
+                <input type="text" id="tagSearch" placeholder="Поиск по тегам...">
+                <button class="search-btn">🔍</button>
+            </div>
+            <div class="auth">
+                <button id="loginBtn" class="auth-btn">Войти</button>
+            </div>
+        </div>
+    </header>
     <div class="app">
         <div class="boards">
             <div class="boards__item">
                 <span contenteditable="true" class="title">Все задачи</span>
-                <div class="list">
-                    <div class="list__item" draggable="true">Стартовая карточка</div>
-                </div>
-
-                <div class="form">
-                    <textarea class="textarea" placeholder="Введите название для этой карточки"></textarea>
-
-                    <div class="buttons">
-                        <button class="add__item-btn">Добавить карточку</button>
-                        <button class="cancel__item-btn">Отмена</button>
-                    </div>
-                </div>
-                
+                <div class="list"></div>
                 <div class="add__btn"><span>+</span>Добавить карточку</div>
             </div>
         </div>
@@ -49,7 +62,7 @@
             <span class="close-modal">&times;</span>
             <h2>Создать карточку</h2>
             <div class="modal-form">
-                <input type="text" id="cardTitle" placeholder="Название" class="modal-input">
+                <input type="text" id="cardTitle" placeholder="Название" class="modal-input" required>
                 <textarea id="cardDescription" placeholder="Описание" class="modal-textarea"></textarea>
                 <input type="text" id="cardTags" placeholder="Теги (через запятую)" class="modal-input">
                 <button id="submitCard" class="modal-submit">Создать</button>
@@ -71,16 +84,16 @@
         </div>
     </div>
 
-    <script src="js/main.js"></script>
     <div class="confirm-modal" id="confirmModal">
         <div class="confirm-content">
-            <h3>Удалить карточку?</h3>
-            <p>Вы уверены, что хотите удалить эту карточку?</p>
+            <h3>Удалить?</h3>
             <div class="confirm-buttons">
                 <button class="confirm-btn confirm-yes">Да, удалить</button>
                 <button class="confirm-btn confirm-no">Отмена</button>
             </div>
         </div>
     </div>
+
+    <script src="js/main.js"></script>
 </body>
 </html>

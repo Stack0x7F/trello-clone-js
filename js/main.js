@@ -6,43 +6,24 @@ document.addEventListener('DOMContentLoaded', function() {
     addTask();
     changeTitle();
     dragNdrop();
+    addBoardDeleteButtons();
+
+    function createCard(title, description = '', tags = '') {
+        const newItem = document.createElement('div');
+        newItem.classList.add('list__item');
+        newItem.draggable = true;
+        newItem.textContent = title;
+        newItem.setAttribute('data-description', description);
+        newItem.setAttribute('data-tags', tags);
+        
+        addDeleteButton(newItem);
+        return newItem;
+    }
 
     function addTask() {
         const btn = document.querySelector('.add__btn');
-        const addBtn = document.querySelector('.add__item-btn');
-        const cancelBtn = document.querySelector('.cancel__item-btn');
-        const textarea = document.querySelector('.textarea');
-        const form = document.querySelector('.form');
-
         btn.addEventListener('click', () => {
             showCreateModal();
-        });
-
-        cancelBtn.addEventListener('click', () => {
-            form.style.display = 'none';
-            btn.style.display = 'flex';
-            textarea.value = '';
-        });
-
-        addBtn.addEventListener('click', () => {
-            const value = textarea.value;
-            if (value.trim() === '') return;
-
-            const newItem = document.createElement('div');
-            newItem.classList.add('list__item');
-            newItem.draggable = true;
-            newItem.textContent = value;
-            
-            // Добавляем кнопку удаления сразу при создании
-            addDeleteButton(newItem);
-            
-            lists[0].append(newItem);
-
-            textarea.value = '';
-            form.style.display = 'none';
-            btn.style.display = 'flex';
-
-            dragNdrop();
         });
     }
 
@@ -53,23 +34,17 @@ document.addEventListener('DOMContentLoaded', function() {
         board.innerHTML = `
             <span contenteditable="true" class="title">Введите название</span>
             <div class="list"></div>
-            <div class="form">
-                <textarea class="textarea" placeholder="Введите название для этой карточки"></textarea>
-                <div class="buttons">
-                    <button class="add__item-btn">Добавить карточку</button>
-                    <button class="cancel__item-btn">Отмена</button>
-                </div>
-            </div>
             <div class="add__btn"><span>+</span>Добавить карточку</div>
         `;
         boards.append(board);
 
         changeTitle();
         dragNdrop();
+        addBoardDeleteButtons();
         
         const newAddBtn = board.querySelector('.add__btn');
         newAddBtn.addEventListener('click', () => {
-            showCreateModal();
+            showCreateModal(board);
         });
     }
 
@@ -91,7 +66,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const lists = document.querySelectorAll('.list');
 
         listItems.forEach(item => {
-            // Проверяем, есть ли уже кнопка удаления
             if (!item.querySelector('.delete-card')) {
                 addDeleteButton(item);
             }
@@ -138,7 +112,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Новая функция для добавления кнопки удаления
     function addDeleteButton(item) {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-card';
@@ -150,7 +123,23 @@ document.addEventListener('DOMContentLoaded', function() {
         item.appendChild(deleteBtn);
     }
 
-    function showCreateModal() {
+    function addBoardDeleteButtons() {
+        const boards = document.querySelectorAll('.boards__item');
+        boards.forEach(board => {
+            if (!board.querySelector('.delete-board-btn')) {
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-board-btn';
+                deleteBtn.innerHTML = '×';
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showConfirmModal(board, 'Вы уверены, что хотите удалить эту доску?');
+                });
+                board.appendChild(deleteBtn);
+            }
+        });
+    }
+
+    function showCreateModal(targetBoard = null) {
         const modal = document.getElementById('createCardModal');
         modal.style.display = 'block';
         
@@ -168,17 +157,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            const newItem = document.createElement('div');
-            newItem.classList.add('list__item');
-            newItem.draggable = true;
-            newItem.textContent = title;
-            newItem.setAttribute('data-description', description);
-            newItem.setAttribute('data-tags', tags);
-            
-            // Добавляем кнопку удаления сразу при создании
-            addDeleteButton(newItem);
-            
-            document.querySelector('.list').append(newItem);
+            const card = createCard(title, description, tags);
+            const targetList = targetBoard ? targetBoard.querySelector('.list') : document.querySelector('.list');
+            targetList.append(card);
             
             document.getElementById('cardTitle').value = '';
             document.getElementById('cardDescription').value = '';
@@ -191,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function showViewModal(card) {
         const modal = document.getElementById('viewCardModal');
-        const title = card.textContent.replace('×', '').trim(); // Удаляем крестик из заголовка
+        const title = card.textContent.replace('×', '').trim();
         const description = card.getAttribute('data-description') || 'Нет описания';
         const tags = card.getAttribute('data-tags') || 'Нет тегов';
         
@@ -206,43 +187,33 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    function showConfirmModal(itemToDelete) {
+    function showConfirmModal(itemToDelete, message = 'Удалить?') {
         const modal = document.getElementById('confirmModal');
+        modal.querySelector('h3').textContent = message;
         modal.style.display = 'block';
-
+    
         const yesBtn = modal.querySelector('.confirm-yes');
         const noBtn = modal.querySelector('.confirm-no');
-
-        const removeEventHandlers = () => {
-            yesBtn.removeEventListener('click', confirmDelete);
-            noBtn.removeEventListener('click', cancelDelete);
-            window.removeEventListener('click', outsideClick);
-        };
-
+    
         const confirmDelete = () => {
             itemToDelete.remove();
             modal.style.display = 'none';
-            removeEventHandlers();
         };
-
-        const cancelDelete = () => {
+    
+        const closeModal = () => {
             modal.style.display = 'none';
-            removeEventHandlers();
         };
-
-        const outsideClick = (e) => {
+    
+        yesBtn.onclick = confirmDelete;
+        noBtn.onclick = closeModal;
+        
+        window.onclick = function(e) {
             if (e.target === modal) {
-                modal.style.display = 'none';
-                removeEventHandlers();
+                closeModal();
             }
         };
-
-        yesBtn.addEventListener('click', confirmDelete);
-        noBtn.addEventListener('click', cancelDelete);
-        window.addEventListener('click', outsideClick);
     }
 
-    // Закрытие модальных окон при клике вне их области
     window.onclick = function(event) {
         const createModal = document.getElementById('createCardModal');
         const viewModal = document.getElementById('viewCardModal');
