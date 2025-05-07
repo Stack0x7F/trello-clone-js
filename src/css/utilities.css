@@ -1,0 +1,9 @@
+.drop-area {
+    min-height: 20px;
+    transition: all 0.2s;
+}
+
+.drop-highlight {
+    background: rgba(77,182,172,0.1);
+    border: 1px dashed var(--accent) !important;
+}

@@ -1,0 +1,71 @@
+.button {
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--primary);
+    border: none;
+    width: 160px;
+    cursor: pointer;
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translate(-50%);
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: var(--shadow);
+    transition: all 0.2s;
+}
+
+.button:hover {
+    background: var(--primary-light);
+    transform: translate(-50%) scale(1.03);
+}
+
+.delete-card {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    background: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.list__item:hover .delete-card {
+    opacity: 1;
+}
+
+.delete-board-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 22px;
+    height: 22px;
+    background: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.boards__item:hover .delete-board-btn {
+    opacity: 1;
+}
